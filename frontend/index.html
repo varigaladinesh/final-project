@@ -4,22 +4,76 @@
   <meta charset="UTF-8" />
   <title>Secure Image Data</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* Page fade-in */
+    body {
+      transition: opacity 0.8s ease-in-out;
+    }
+
+    /* 🔥 Glowing black + cherry red hacker background */
+    body {
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255, 0, 60, 0.18), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.06), transparent 35%),
+        linear-gradient(120deg, #050505, #0b0b0b, #050505);
+      overflow: hidden;
+    }
+
+    /* Glow for main card */
+    .glow-card {
+      box-shadow:
+        0 0 30px rgba(255, 0, 60, 0.35),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+    }
+
+    /* 🔴 STEP 5: Pulse glow (used during encrypt/decrypt) */
+    @keyframes pulseGlow {
+      0% {
+        box-shadow: 0 0 15px rgba(255, 0, 60, 0.4),
+                    inset 0 0 20px rgba(255, 255, 255, 0.05);
+      }
+      50% {
+        box-shadow: 0 0 45px rgba(255, 0, 60, 0.9),
+                    inset 0 0 25px rgba(255, 255, 255, 0.08);
+      }
+      100% {
+        box-shadow: 0 0 15px rgba(255, 0, 60, 0.4),
+                    inset 0 0 20px rgba(255, 255, 255, 0.05);
+      }
+    }
+
+    .pulse {
+      animation: pulseGlow 1.2s ease-in-out infinite;
+    }
+  </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 flex items-center justify-center">
 
-  <div class="backdrop-blur-lg bg-white/10 p-10 rounded-2xl shadow-2xl text-center text-white w-[400px]">
-    <h1 class="text-3xl font-extrabold mb-4">🔐 Secure Image Data</h1>
-    <p class="mb-8 text-white/80">SHA + ECC based Image Encryption</p>
+<body class="opacity-0 text-white overflow-hidden">
 
-    <div class="space-y-4">
-      <a href="encrypt.html" class="block bg-green-400 hover:bg-green-500 transition py-3 rounded-xl font-semibold text-black">
-        Encrypt Image
-      </a>
-      <a href="decrypt.html" class="block bg-blue-400 hover:bg-blue-500 transition py-3 rounded-xl font-semibold text-black">
-        Decrypt Image
-      </a>
+  <!-- Background canvas (keys / matrix animation runs here) -->
+  <canvas id="bgCanvas" class="fixed inset-0 -z-10"></canvas>
+
+
+  <div class="min-h-screen flex items-center justify-center">
+    <div class="bg-white/10 backdrop-blur-xl p-10 rounded-2xl w-[420px] text-center glow-card">
+      <h1 class="text-3xl font-bold mb-2">🔐 Secure Image Data</h1>
+      <p class="text-white/70 mb-6">ECC · AES · SHA Steganography</p>
+
+      <div class="space-y-4">
+        <a href="encrypt.html"
+           class="block bg-green-500 hover:bg-green-600 py-3 rounded-xl font-bold text-black transition">
+          Encrypt Image
+        </a>
+
+        <a href="decrypt.html"
+           class="block bg-blue-500 hover:bg-blue-600 py-3 rounded-xl font-bold text-black transition">
+          Decrypt Image
+        </a>
+      </div>
     </div>
   </div>
 
+  <script src="script.js"></script>
 </body>
 </html>

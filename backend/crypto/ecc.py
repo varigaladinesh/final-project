@@ -1,47 +1,63 @@
+# backend/crypto/ecc.py
+
 from cryptography.hazmat.primitives.asymmetric import ec
-from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
-from cryptography.fernet import Fernet
-import base64
+import os
 
-# Server key pair (generated once)
-SERVER_PRIVATE_KEY = ec.generate_private_key(ec.SECP256R1())
-SERVER_PUBLIC_KEY = SERVER_PRIVATE_KEY.public_key()
+KEY_FILE = "crypto/ecc_private_key.pem"
 
 
-def derive_key(shared_key: bytes) -> bytes:
-    return base64.urlsafe_b64encode(
-        HKDF(
-            algorithm=hashes.SHA256(),
-            length=32,
-            salt=None,
-            info=b"ecc-image-project",
-        ).derive(shared_key)
-    )
+def load_or_create_private_key():
+    if os.path.exists(KEY_FILE):
+        with open(KEY_FILE, "rb") as f:
+            return serialization.load_pem_private_key(f.read(), password=None)
+
+    private_key = ec.generate_private_key(ec.SECP256R1())
+    with open(KEY_FILE, "wb") as f:
+        f.write(
+            private_key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.PKCS8,
+                encryption_algorithm=serialization.NoEncryption(),
+            )
+        )
+    return private_key
 
 
-def ecc_encrypt(message: str) -> bytes:
-    sender_private = ec.generate_private_key(ec.SECP256R1())
-    sender_public = sender_private.public_key()
+PRIVATE_KEY = load_or_create_private_key()
+PUBLIC_KEY = PRIVATE_KEY.public_key()
 
-    shared_key = sender_private.exchange(ec.ECDH(), SERVER_PUBLIC_KEY)
-    key = derive_key(shared_key)
 
-    encrypted_message = Fernet(key).encrypt(message.encode())
+def generate_ecc_shared_secret():
+    eph_private = ec.generate_private_key(ec.SECP256R1())
+    eph_public = eph_private.public_key()
 
-    sender_pub_bytes = sender_public.public_bytes(
+    shared_secret = eph_private.exchange(ec.ECDH(), PUBLIC_KEY)
+
+    derived_key = HKDF(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=None,
+        info=b"ecc-aes-key",
+    ).derive(shared_secret)
+
+    eph_pub_bytes = eph_public.public_bytes(
         encoding=serialization.Encoding.DER,
         format=serialization.PublicFormat.SubjectPublicKeyInfo,
     )
 
-    return sender_pub_bytes + b"||" + encrypted_message
+    return eph_pub_bytes, derived_key
 
 
-def ecc_decrypt(ciphertext: bytes) -> str:
-    sender_pub_bytes, encrypted_message = ciphertext.split(b"||", 1)
+def recover_ecc_shared_secret(eph_pub_bytes: bytes):
+    eph_public = serialization.load_der_public_key(eph_pub_bytes)
 
-    sender_public_key = serialization.load_der_public_key(sender_pub_bytes)
-    shared_key = SERVER_PRIVATE_KEY.exchange(ec.ECDH(), sender_public_key)
-    key = derive_key(shared_key)
+    shared_secret = PRIVATE_KEY.exchange(ec.ECDH(), eph_public)
 
-    return Fernet(key).decrypt(encrypted_message).decode()
+    return HKDF(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=None,
+        info=b"ecc-aes-key",
+    ).derive(shared_secret)

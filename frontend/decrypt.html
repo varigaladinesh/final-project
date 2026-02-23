@@ -4,30 +4,99 @@
   <meta charset="UTF-8" />
   <title>Decrypt Image</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* Page fade-in */
+    body {
+      transition: opacity 0.8s ease-in-out;
+    }
+
+    /* 🔥 Shared glowing black + cherry red background */
+    body {
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255, 0, 60, 0.18), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.06), transparent 35%),
+        linear-gradient(120deg, #050505, #0b0b0b, #050505);
+      overflow: hidden;
+    }
+
+    /* Glow for main card */
+    .glow-card {
+      box-shadow:
+        0 0 30px rgba(255, 0, 60, 0.35),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+    }
+  </style>
 </head>
-<body class="min-h-screen bg-gradient-to-r from-black to-gray-900 flex items-center justify-center text-white">
 
-  <div class="bg-white/10 backdrop-blur-xl p-10 rounded-2xl shadow-xl w-[420px]">
-    <h2 class="text-2xl font-bold mb-6 text-center">🔓 Decrypt Image</h2>
+<body class="opacity-0 text-white overflow-hidden">
 
-    <form id="decryptForm" class="space-y-4">
-      <input
-        type="file"
-        name="image"
-        accept="image/*"
-        class="w-full text-sm"
-        required />
+  <!-- ✅ Shared background canvas -->
+  <canvas id="bgCanvas" class="fixed inset-0 -z-10"></canvas>
 
-      <button
-        type="submit"
-        class="w-full bg-blue-500 hover:bg-blue-600 transition py-3 rounded-xl font-bold text-black">
-        Decrypt Message
-      </button>
-    </form>
 
-    <div id="decryptResult" class="mt-5 p-3 rounded-lg bg-black/40 text-sm hidden"></div>
+
+
+  <div class="min-h-screen flex items-center justify-center">
+    <div class="bg-white/10 backdrop-blur-xl p-10 rounded-2xl w-[420px] glow-card">
+
+      <h2 class="text-2xl font-bold mb-6 text-center">
+        🔓 Decrypt Image
+      </h2>
+
+      <form id="decryptForm" class="space-y-4">
+
+        <input
+          type="password"
+          name="password"
+          placeholder="Enter password"
+          class="w-full p-3 rounded-lg bg-black/30 border border-white/20 focus:outline-none"
+          required />
+
+        <!-- Modern file upload -->
+        <label class="block">
+          <span class="sr-only">Choose image</span>
+          <input
+            type="file"
+            name="image"
+            accept=".png"
+            required
+            class="block w-full text-sm text-gray-300
+                   file:mr-4 file:py-3 file:px-5
+                   file:rounded-xl file:border-0
+                   file:text-sm file:font-semibold
+                   file:bg-gradient-to-r file:from-indigo-500 file:to-purple-600
+                   file:text-white
+                   hover:file:opacity-90
+                   transition"/>
+        </label>
+
+        <button
+          type="submit"
+          id="decryptBtn"
+          class="w-full bg-blue-500 hover:bg-blue-600 transition
+                 py-3 rounded-xl font-bold text-black
+                 flex items-center justify-center gap-2">
+
+          <span id="decryptBtnText">Decrypt Message</span>
+
+          <span id="decryptSpinner"
+                class="hidden w-5 h-5 border-2 border-black
+                       border-t-transparent rounded-full animate-spin">
+          </span>
+        </button>
+      </form>
+
+      <div id="decryptResult"
+           class="mt-5 p-4 rounded-xl text-sm hidden"></div>
+
+      <a href="index.html"
+         class="block mt-6 text-center text-white/70 hover:text-white">
+        ← Back to Home
+      </a>
+    </div>
   </div>
 
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

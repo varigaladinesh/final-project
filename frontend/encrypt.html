@@ -4,36 +4,151 @@
   <meta charset="UTF-8" />
   <title>Encrypt Image</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* Page fade-in */
+    body {
+      transition: opacity 0.8s ease-in-out;
+    }
+
+    /* 🔥 Shared glowing black + cherry red background */
+    body {
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255, 0, 60, 0.18), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.06), transparent 35%),
+        linear-gradient(120deg, #050505, #0b0b0b, #050505);
+      overflow: hidden;
+    }
+
+    /* Glow for card */
+    .glow-card {
+      box-shadow:
+        0 0 30px rgba(255, 0, 60, 0.35),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+    }
+  </style>
 </head>
-<body class="min-h-screen bg-gradient-to-r from-slate-900 to-indigo-900 flex items-center justify-center text-white">
 
-  <div class="bg-white/10 backdrop-blur-xl p-10 rounded-2xl shadow-xl w-[420px]">
-    <h2 class="text-2xl font-bold mb-6 text-center">🔐 Encrypt Secret Message</h2>
+<body class="opacity-0 text-white overflow-hidden">
 
-    <form id="encryptForm" class="space-y-4">
-      <textarea
-        name="secret_message"
-        placeholder="Enter secret message..."
-        class="w-full p-3 rounded-lg bg-black/30 border border-white/20 focus:outline-none"
-        required></textarea>
+  <!-- ✅ Shared background canvas -->
+  <canvas id="bgCanvas" class="fixed inset-0 -z-10"></canvas>
 
-      <input
-        type="file"
-        name="image"
-        accept=".jpg,.jpeg,.png"
-        class="w-full text-sm"
-        required />
+  <!-- ✅ Hacker silhouette (Step 4) -->
 
-      <button
-        type="submit"
-        class="w-full bg-green-500 hover:bg-green-600 transition py-3 rounded-xl font-bold text-black">
-        Encrypt & Download
-      </button>
-    </form>
 
-    <p id="encryptStatus" class="text-center mt-4 text-sm"></p>
+  <div class="min-h-screen flex items-center justify-center">
+    <div class="bg-white/10 backdrop-blur-xl p-10 rounded-2xl w-[420px] glow-card">
+
+      <h2 class="text-2xl font-bold mb-6 text-center">
+        🔒 Encrypt Secret Message
+      </h2>
+
+      <form id="encryptForm" class="space-y-4">
+
+        <textarea
+          name="secret_message"
+          placeholder="Enter secret message"
+          class="w-full p-3 rounded-lg bg-black/30 border border-white/20 focus:outline-none"
+          required></textarea>
+
+        <input
+          type="password"
+          name="password"
+          placeholder="Password (remember this)"
+          class="w-full p-3 rounded-lg bg-black/30 border border-white/20 focus:outline-none"
+          required />
+
+        <!-- Password strength -->
+        <div class="mt-1">
+          <div class="h-2 rounded bg-white/20">
+            <div id="pwdBar" class="h-2 rounded w-0 transition-all"></div>
+          </div>
+          <p id="pwdText" class="text-xs mt-1 text-white/70"></p>
+        </div>
+
+        <!-- Modern file upload -->
+        <label class="block">
+          <span class="sr-only">Choose image</span>
+          <input
+            type="file"
+            name="image"
+            accept=".png"
+            required
+            class="block w-full text-sm text-gray-300
+                   file:mr-4 file:py-3 file:px-5
+                   file:rounded-xl file:border-0
+                   file:text-sm file:font-semibold
+                   file:bg-gradient-to-r file:from-indigo-500 file:to-purple-600
+                   file:text-white
+                   hover:file:opacity-90
+                   transition"/>
+        </label>
+
+        <button
+          type="submit"
+          class="w-full bg-green-500 hover:bg-green-600 transition py-3 rounded-xl font-bold text-black">
+          Encrypt & Download
+        </button>
+      </form>
+
+      <p id="encryptStatus" class="text-center mt-4 text-sm"></p>
+
+      <!-- 🔐 Crypto Output -->
+      <div id="cryptoInfo" class="mt-4 hidden text-sm">
+
+        <!-- SHA BOX -->
+        <div class="mb-4">
+          <p class="text-white/70 text-xs mb-1">SHA-256 Hash</p>
+
+          <div class="flex items-center gap-2 bg-black/40 rounded-xl p-3">
+            <span id="shaText"
+                  class="text-green-300 text-xs break-all flex-1"></span>
+
+            <button
+              onclick="copySHA()"
+              class="text-white/70 hover:text-white transition"
+              title="Copy SHA">
+              📋
+            </button>
+          </div>
+        </div>
+
+        <!-- DOWNLOAD BOX -->
+        <div class="bg-gradient-to-r from-green-500/20 to-emerald-500/10
+                    border border-green-400/30 rounded-2xl p-4 text-center">
+          <p class="text-white/80 text-sm mb-2">
+            🔐 Secured Image Ready
+          </p>
+
+          <a id="downloadLink"
+             href="#"
+             class="inline-flex items-center gap-2
+                    bg-green-500 hover:bg-green-600
+                    px-6 py-3 rounded-xl
+                    font-bold text-black transition">
+            ⬇ Download Image
+          </a>
+        </div>
+      </div>
+
+      <a href="index.html"
+         class="block mt-6 text-center text-white/70 hover:text-white">
+        ← Back to Home
+      </a>
+    </div>
   </div>
 
-<script src="script.js"></script>
+  <script src="script.js"></script>
+
+  <!-- Copy SHA helper -->
+  <script>
+    function copySHA() {
+      const sha = document.getElementById("shaText").innerText;
+      navigator.clipboard.writeText(sha);
+      alert("SHA copied to clipboard!");
+    }
+  </script>
+
 </body>
 </html>
