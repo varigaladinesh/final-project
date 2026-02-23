@@ -113,21 +113,21 @@ document.getElementById("encryptForm")?.addEventListener("submit", async (e) => 
     // ✅ Populate modern UI elements
     shaText.innerText = data.sha256;
     downloadLink.onclick = async (e) => {
-  e.preventDefault();
+      e.preventDefault();
 
-  const response = await fetch(data.download_url);
-  const blob = await response.blob();
+      const response = await fetch(data.download_url);
+      const blob = await response.blob();
 
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement("a");
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
 
-  a.href = url;
-  a.download = data.download_url.split("/").pop();
-  document.body.appendChild(a);
-  a.click();
+      a.href = url;
+      a.download = data.download_url.split("/").pop();
+      document.body.appendChild(a);
+      a.click();
 
-  a.remove();
-  window.URL.revokeObjectURL(url);
+      a.remove();
+      window.URL.revokeObjectURL(url);
 };
 
     cryptoBox.classList.remove("hidden");

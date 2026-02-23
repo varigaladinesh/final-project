@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 import os, shutil
 
+from fastapi.responses import FileResponse
 from crypto.ecc import generate_ecc_shared_secret, recover_ecc_shared_secret
 from crypto.aes import aes_encrypt, aes_decrypt
 from crypto.sha import generate_sha256
@@ -120,6 +121,11 @@ async def decrypt_image(
         }
 
 
+
 @app.get("/download/{filename}")
 def download_file(filename: str):
-    return FileResponse(os.path.join(OUTPUT_DIR, filename))
+    return FileResponse(
+        path=os.path.join(OUTPUT_DIR, filename),
+        media_type="application/octet-stream",
+        filename=filename
+    )
