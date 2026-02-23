@@ -101,7 +101,7 @@ document.getElementById("encryptForm")?.addEventListener("submit", async (e) => 
   cryptoBox.classList.add("hidden");
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/encrypt", {
+    const res = await fetch("https://secure-image-uiwh.onrender.com/encrypt", {
       method: "POST",
       body: formData,
     });
@@ -162,7 +162,7 @@ document.getElementById("decryptForm")?.addEventListener("submit", async (e) => 
   box.innerHTML = "🔄 Processing decryption…";
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/decrypt", {
+    const res = await fetch("https://secure-image-uiwh.onrender.com/decrypt", {
       method: "POST",
       body: formData,
     });
