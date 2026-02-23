@@ -68,7 +68,7 @@ async def encrypt_image(
     return {
         "status": "Success",
         "sha256": sha,
-        "download_url": f"http://127.0.0.1:8000/download/{out_name}",
+        "download_url": f"https://secure-image-uiwh.onrender.com/download/{out_name}",
     }
 
 
