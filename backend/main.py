@@ -122,10 +122,7 @@ async def decrypt_image(
 
 
 
+
 @app.get("/download/{filename}")
 def download_file(filename: str):
-    return FileResponse(
-        path=os.path.join(OUTPUT_DIR, filename),
-        media_type="application/octet-stream",
-        filename=filename
-    )
+    return FileResponse(os.path.join(OUTPUT_DIR, filename))
